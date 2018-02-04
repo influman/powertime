@@ -17,8 +17,9 @@
             	//**********************************************************************************
 		// RAZ demandé
 		if ($action == 'raz' && $capteur == "jour") {
-			if (loadVariable('POWERTIME') != '') {
-					$tab_powertime = loadVariable('POWERTIME');
+			$preload = loadVariable('POWERTIME');
+			if ($preload != '' && substr($preload, 0, 8) != "## ERROR") {
+					$tab_powertime = $preload;
 					if (array_key_exists($api_periph, $tab_powertime)) 
 					{
 						$tab_powertime[$api_periph]['jour'] = 0;
@@ -37,8 +38,10 @@
             	$daylast = 0;
             	$monthlast = 0;
 				$anneelast = 0;
-            	if (loadVariable('POWERTIME') != '') {
-							$tab_powertime = loadVariable('POWERTIME');
+				$preload = loadVariable('POWERTIME');
+				if ($preload != '' && substr($preload, 0, 8) != "## ERROR") {
+            	
+							$tab_powertime = $preload;
 							if (array_key_exists($api_periph, $tab_powertime)) 
 							{
 								$last = $tab_powertime[$api_periph]['last'];
