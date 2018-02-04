@@ -1,0 +1,168 @@
+{
+	"plugin_id": "powertime",
+	"name_fr": "Temps de fonctionnement",
+	"icon": "powertime.png",
+	"version": "2.0",
+	"creation_date": "2017-11-06",
+	"modification_date": "2017-11-28",
+	"author": "Influman",
+	"description_fr": "Suivi du temps de fonctionnement d'un périphérique<br>Appareil, lumière, chauffage...",
+	"description_en": "",
+	"description_es": "",
+	"description_it": "",
+	"description_de": "",
+	"forum_link": "http://forum.eedomus.com/viewtopic.php?f=50&t=6108",
+	"parameters":
+  [
+		{
+			"parameter": "NAME", 
+			"description": "Nom du périphérique mesuré",
+			"xtype": "textfield",
+			"default_value": "Appareil",
+			"field": "width:200, allowBlank:false"
+		},
+		{
+    		"parameter": "API", 
+			"description": "Périphérique à mesurer",
+    		"xtype": "combo",
+			"field": "store : getCombo('/json/list_all.php'), displayField: 'label', valueField: 'id', typeAhead: true, forceSelection: true, triggerAction: 'all', selectOnFocus: true, editable: false, shadow:true, mode: 'local', width: 250, listWidth: 300, allowBlank: true"
+		},
+		{
+    		"parameter": "VAL", 
+			"description": "Valeur du périphérique quand ON",
+    		"xtype": "textfield",
+			"default_value": "100",
+			"field": "width:100, allowBlank:false"
+		}
+		
+  ],
+	"scripts":
+	[
+		{
+			"name": "powertime.php"
+		}
+	],
+	"devices":
+  [
+		{
+			"device_id": "tempsjour",
+			"module_id": "51",
+			"type": "http",
+			"name_fr": "Temps fonctionnement - plugin.parameters.NAME - Jour",
+			"icon": "powertime.png",
+			"utilisation_id": "35",
+			"parameters":
+			{
+				"VAR1": "plugin.parameters.API",
+				"VAR2": "plugin.parameters.VAL",
+      			"VAR3": "",
+				"value_type": "string",
+				"ignore_errors": 3,
+				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&action=poll&capteur=jour",
+				"RAW_XPATH": "concat(/POWERTIME/JOUR,' (', /POWERTIME/JOUR_PREC, ')')",
+				"POLLING": "2"
+			}
+		},
+		{
+			"device_id": "tempsjourlit",
+			"parent_id": "tempsjour",
+			"module_id": "51",
+			"type": "http",
+			"name_fr": "Temps fonctionnement - plugin.parameters.NAME - Jour Lit",
+			"icon": "powertime.png",
+			"utilisation_id": "35",
+			"parameters":
+			{
+				"VAR1": "plugin.parameters.API",
+				"VAR2": "plugin.parameters.VAL",
+      			"VAR3": "",
+				"value_type": "string",
+				"ignore_errors": 3,
+				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&action=poll",
+				"RAW_XPATH": "concat(/POWERTIME/JOURLIT,' (', /POWERTIME/JOURLIT_PREC, ')')",
+				"POLLING": "2"
+			}
+		},
+		{
+			"device_id": "tempsmois",
+			"parent_id": "tempsjour",
+			"module_id": "51",
+			"type": "http",
+			"name_fr": "Temps fonctionnement - plugin.parameters.NAME - Mois",
+			"icon": "powertime.png",
+			"utilisation_id": "35",
+			"parameters":
+			{
+				"VAR1": "plugin.parameters.API",
+				"VAR2": "plugin.parameters.VAL",
+      			"VAR3": "",
+				"value_type": "string",
+				"ignore_errors": 3,
+				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&action=poll",
+				"RAW_XPATH": "concat(/POWERTIME/MOIS,' (', /POWERTIME/MOIS_PREC, ')')",
+				"POLLING": "2"
+			}
+		},
+		{
+			"device_id": "tempsmoislit",
+			"parent_id": "tempsjour",
+			"module_id": "51",
+			"type": "http",
+			"name_fr": "Temps fonctionnement - plugin.parameters.NAME - Mois Lit",
+			"icon": "powertime.png",
+			"utilisation_id": "35",
+			"parameters":
+			{
+				"VAR1": "plugin.parameters.API",
+				"VAR2": "plugin.parameters.VAL",
+      			"VAR3": "",
+				"value_type": "string",
+				"ignore_errors": 3,
+				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&action=poll",
+				"RAW_XPATH": "concat(/POWERTIME/MOISLIT,' (', /POWERTIME/MOISLIT_PREC, ')')",
+				"POLLING": "2"
+			}
+		},
+		{
+			"device_id": "tempsan",
+			"parent_id": "tempsjour",
+			"module_id": "51",
+			"type": "http",
+			"name_fr": "Temps fonctionnement - plugin.parameters.NAME - Année",
+			"icon": "powertime.png",
+			"utilisation_id": "35",
+			"parameters":
+			{
+				"VAR1": "plugin.parameters.API",
+				"VAR2": "plugin.parameters.VAL",
+      			"VAR3": "",
+				"value_type": "string",
+				"ignore_errors": 3,
+				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&action=poll",
+				"RAW_XPATH": "concat(/POWERTIME/ANNEE,' (', /POWERTIME/ANNEE_PREC, ')')",
+				"POLLING": "2"
+			}
+		},
+		{
+			"device_id": "tempsanlit",
+			"parent_id": "tempsjour",
+			"module_id": "51",
+			"type": "http",
+			"name_fr": "Temps fonctionnement - plugin.parameters.NAME - Annee Lit",
+			"icon": "powertime.png",
+			"utilisation_id": "35",
+			"parameters":
+			{
+				"VAR1": "plugin.parameters.API",
+				"VAR2": "plugin.parameters.VAL",
+      			"VAR3": "",
+				"value_type": "string",
+				"ignore_errors": 3,
+				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&action=poll",
+				"RAW_XPATH": "concat(/POWERTIME/ANNEELIT,' (', /POWERTIME/ANNEELIT_PREC, ')')",
+				"POLLING": "2"
+			}
+		}
+		
+	]
+}
