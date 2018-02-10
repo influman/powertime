@@ -1,7 +1,7 @@
 <?php  
             $xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";  
 	        //**********************************************************************************************************
-            // V2.0 : Script de suivi du temps de fonctionnement d'un appareil, par relevé régulier de l'état (relevé non précis)
+            // V2.1 : Script de suivi du temps de fonctionnement d'un appareil, par relevé régulier de l'état (relevé non précis)
             //*************************************** ******************************************************************
             // recuperation des infos depuis la requete
             $api_periph = getArg("api", $mandatory = true, $default = 'undefined');
@@ -17,59 +17,55 @@
             	//**********************************************************************************
 		// RAZ demandé
 		if ($action == 'raz' && $capteur == "jour") {
+			$preload = loadVariable('POWERTIME_'.$api_periph);
+			if ($preload != '' && substr($preload, 0, 8) != "## ERROR") {
+					$tab_powertime = $preload;
+					$tab_powertime['jour'] = 0;
+					$tab_powertime['mois'] = 0;
+					$tab_powertime['annee'] = 0;
+					$tab_powertime['mois_prec'] = 0;
+					$tab_powertime['jour_prec'] = 0;
+					$tab_powertime['annee_prec'] = 0;
+					$tab_powertime['last'] = date('d')."-00:00";
+					saveVariable('POWERTIME_'.$api_periph, $tab_powertime);
+					
+            }
+	    }
+		// Migration v2.0
+		if ($action == 'migrate' && $capteur == "jour") {
 			$preload = loadVariable('POWERTIME');
 			if ($preload != '' && substr($preload, 0, 8) != "## ERROR") {
 					$tab_powertime = $preload;
-					if (array_key_exists($api_periph, $tab_powertime)) 
-					{
-						$tab_powertime[$api_periph]['jour'] = 0;
-						$tab_powertime[$api_periph]['mois'] = 0;
-						$tab_powertime[$api_periph]['annee'] = 0;
-						$tab_powertime[$api_periph]['mois_prec'] = 0;
-						$tab_powertime[$api_periph]['jour_prec'] = 0;
-						$tab_powertime[$api_periph]['annee_prec'] = 0;
-						$tab_powertime[$api_periph]['last'] = date('d')."-00:00";
-						saveVariable('POWERTIME', $tab_powertime);
+					if (array_key_exists($api_periph, $tab_powertime)) {
+					    saveVariable('POWERTIME_'.$api_periph, $tab_powertime[$api_periph]);
 					}
-            }
-	    }
+			}
+		}
 		// Lecture temps de fonctionnement
         if ($action == 'poll' && $api_periph != 'undefined') {
             	$daylast = 0;
             	$monthlast = 0;
 				$anneelast = 0;
-				$preload = loadVariable('POWERTIME');
+				$preload = loadVariable('POWERTIME_'.$api_periph);
 				if ($preload != '' && substr($preload, 0, 8) != "## ERROR") {
             	
 							$tab_powertime = $preload;
-							if (array_key_exists($api_periph, $tab_powertime)) 
-							{
-								$last = $tab_powertime[$api_periph]['last'];
-								$daylast = $tab_powertime[$api_periph]['jour'];
-								$monthlast = $tab_powertime[$api_periph]['mois'];
-								$anneelast = $tab_powertime[$api_periph]['annee'];
-							} 
-							else
-							{
-								// initialisation du nouveau périphérique suivi
-								$tab_powertime[$api_periph]['last'] = date('d')."-00:00";
-								$tab_powertime[$api_periph]['jour'] = 0;
-								$tab_powertime[$api_periph]['mois'] = 0;
-								$tab_powertime[$api_periph]['annee'] = 0;
-								$tab_powertime[$api_periph]['mois_prec'] = 0;
-								$tab_powertime[$api_periph]['jour_prec'] = 0;
-								$tab_powertime[$api_periph]['annee_prec'] = 0;
-							}
+							$last = $tab_powertime['last'];
+							$daylast = $tab_powertime['jour'];
+							$monthlast = $tab_powertime['mois'];
+							$anneelast = $tab_powertime['annee'];
+							 
+							
             	}
             	else {
             			// aucune variable suivie, mise à zéro
-            			$tab_powertime[$api_periph]['last'] = date('d')."-00:00";
-						$tab_powertime[$api_periph]['jour'] = 0;
-						$tab_powertime[$api_periph]['mois'] = 0;
-						$tab_powertime[$api_periph]['annee'] = 0;
-						$tab_powertime[$api_periph]['mois_prec'] = 0;
-						$tab_powertime[$api_periph]['jour_prec'] = 0;
-						$tab_powertime[$api_periph]['annee_prec'] = 0;
+            			$tab_powertime['last'] = date('d')."-00:00";
+						$tab_powertime['jour'] = 0;
+						$tab_powertime['mois'] = 0;
+						$tab_powertime['annee'] = 0;
+						$tab_powertime['mois_prec'] = 0;
+						$tab_powertime['jour_prec'] = 0;
+						$tab_powertime['annee_prec'] = 0;
             	}
 					
             	$valeurPeriph = getValue($api_periph);
@@ -86,19 +82,19 @@
 						$lasttime = '00:00';
 						$mesureveille = true;
 						$razday = true;
-						$tab_powertime[$api_periph]['jour_prec'] = $tab_powertime[$api_periph]['jour'];
-						$tab_powertime[$api_periph]['jour'] = 0;
+						$tab_powertime['jour_prec'] = $tab_powertime['jour'];
+						$tab_powertime['jour'] = 0;
 						$daylast = 0;
 						if (date('j') == 1) {
 							$razmois = true;
-							$tab_powertime[$api_periph]['mois_prec'] = $tab_powertime[$api_periph]['mois'];
-							$tab_powertime[$api_periph]['mois'] = 0;
+							$tab_powertime['mois_prec'] = $tab_powertime['mois'];
+							$tab_powertime['mois'] = 0;
 							$monthlast = 0;
 						}
 						if (date('n') == 1 && $razmois) {
 							$razannee = true;
-							$tab_powertime[$api_periph]['annee_prec'] = $tab_powertime[$api_periph]['annee'];
-							$tab_powertime[$api_periph]['annee'] = 0;
+							$tab_powertime['annee_prec'] = $tab_powertime['annee'];
+							$tab_powertime['annee'] = 0;
 							$anneelast = 0;
 						}
 					}
@@ -129,30 +125,30 @@
             			$monthlast += $onlymn;
 						$anneelast += $onlymn;
 						
-						$tab_powertime[$api_periph]['jour'] = $daylast;
-						$tab_powertime[$api_periph]['mois'] = $monthlast;
-						$tab_powertime[$api_periph]['annee'] = $anneelast;
+						$tab_powertime['jour'] = $daylast;
+						$tab_powertime['mois'] = $monthlast;
+						$tab_powertime['annee'] = $anneelast;
 						
             		}
-					$tab_powertime[$api_periph]['last'] = date('d')."-".$maintenant;
-					saveVariable('POWERTIME', $tab_powertime);
+					$tab_powertime['last'] = date('d')."-".$maintenant;
+					saveVariable('POWERTIME_'.$api_periph, $tab_powertime);
             	}	
-            		$xml .= "<JOUR>".$tab_powertime[$api_periph]['jour']."</JOUR>";
-					$minutes = $tab_powertime[$api_periph]['jour'];
+            		$xml .= "<JOUR>".$tab_powertime['jour']."</JOUR>";
+					$minutes = $tab_powertime['jour'];
             		$heure = floor($minutes/60);
 					$reste2 = ($minutes%60);
 					$minute = floor($reste2);
 					$xml .= "<JOURLIT>".$heure."h ".$minute."mn</JOURLIT>";
 					
-            		$xml .= "<JOUR_PREC>".$tab_powertime[$api_periph]['jour_prec']."</JOUR_PREC>";
-            		$minutes = $tab_powertime[$api_periph]['jour_prec'];
+            		$xml .= "<JOUR_PREC>".$tab_powertime['jour_prec']."</JOUR_PREC>";
+            		$minutes = $tab_powertime['jour_prec'];
             		$heure = floor($minutes/60);
 					$reste2 = ($minutes%60);
 					$minute = floor($reste2);
 					$xml .= "<JOURLIT_PREC>".$heure."h ".$minute."mn</JOURLIT_PREC>";
             		
-            		$xml .= "<MOIS>".$tab_powertime[$api_periph]['mois']."</MOIS>";
-            		$minutes = $tab_powertime[$api_periph]['mois'];
+            		$xml .= "<MOIS>".$tab_powertime['mois']."</MOIS>";
+            		$minutes = $tab_powertime['mois'];
             		$jour = floor($minutes/1440);
 					$reste1 = ($minutes%1440);
             		$heure = floor($reste1/60);
@@ -160,8 +156,8 @@
 					$minute = floor($reste2);
 					$xml .= "<MOISLIT>".$jour."j ".$heure."h ".$minute."mn</MOISLIT>";
 					
-            		$xml .= "<MOIS_PREC>".$tab_powertime[$api_periph]['mois_prec']."</MOIS_PREC>";
-            		$minutes = $tab_powertime[$api_periph]['mois_prec'];
+            		$xml .= "<MOIS_PREC>".$tab_powertime['mois_prec']."</MOIS_PREC>";
+            		$minutes = $tab_powertime['mois_prec'];
             		$jour = floor($minutes/1440);
 					$reste1 = ($minutes%1440);
             		$heure = floor($reste1/60);
@@ -169,8 +165,8 @@
 					$minute = floor($reste2);
 					$xml .= "<MOISLIT_PREC>".$jour."j ".$heure."h ".$minute."mn</MOISLIT_PREC>";
 					
-					$xml .= "<ANNEE>".$tab_powertime[$api_periph]['annee']."</ANNEE>";
-            		$minutes = $tab_powertime[$api_periph]['annee'];
+					$xml .= "<ANNEE>".$tab_powertime['annee']."</ANNEE>";
+            		$minutes = $tab_powertime['annee'];
 					$jour = floor($minutes/1440);
 					$reste1 = ($minutes%1440);
             		$heure = floor($reste1/60);
@@ -178,8 +174,8 @@
 					$minute = floor($reste2);
 					$xml .= "<ANNEELIT>".$jour."j ".$heure."h ".$minute."mn</ANNEELIT>";
 					
-            		$xml .= "<ANNEE_PREC>".$tab_powertime[$api_periph]['annee_prec']."</ANNEE_PREC>";
-            		$minutes = $tab_powertime[$api_periph]['annee_prec'];
+            		$xml .= "<ANNEE_PREC>".$tab_powertime['annee_prec']."</ANNEE_PREC>";
+            		$minutes = $tab_powertime['annee_prec'];
             		$jour = floor($minutes/1440);
 					$reste1 = ($minutes%1440);
             		$heure = floor($reste1/60);
