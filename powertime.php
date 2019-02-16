@@ -4,9 +4,9 @@
             // V2.1 : Script de suivi du temps de fonctionnement d'un appareil, par relevé régulier de l'état (relevé non précis)
             //*************************************** ******************************************************************
             // recuperation des infos depuis la requete
-            $api_periph = getArg("api", $mandatory = true, $default = 'undefined');
-            $valeurON = getArg("val", $mandatory = true, $default = 100);
-            $capteur = getArg("capteur", $mandatory = false, $default = '');
+            $api_periph = getArg("api", true, 'undefined');
+            $valeurON = getArg("val", true, 100);
+            $capteur = getArg("capteur", false, '');
             $api_script = getArg('eedomus_controller_module_id'); 
             $action = getArg("action"); 
  
@@ -22,8 +22,10 @@
 					$tab_powertime = $preload;
 					$tab_powertime['jour'] = 0;
 					$tab_powertime['mois'] = 0;
+					$tab_powertime['semaine'] = 0;
 					$tab_powertime['annee'] = 0;
 					$tab_powertime['mois_prec'] = 0;
+					$tab_powertime['semaine_prec'] = 0;
 					$tab_powertime['jour_prec'] = 0;
 					$tab_powertime['annee_prec'] = 0;
 					$tab_powertime['last'] = date('d')."-00:00";
@@ -45,18 +47,19 @@
         if ($action == 'poll' && $api_periph != 'undefined') {
             	$daylast = 0;
             	$monthlast = 0;
+				$weeklast = 0;
 				$anneelast = 0;
 				$preload = loadVariable('POWERTIME_'.$api_periph);
 				if ($preload != '' && substr($preload, 0, 8) != "## ERROR") {
-            	
-							$tab_powertime = $preload;
-							$last = $tab_powertime['last'];
-							$daylast = $tab_powertime['jour'];
-							$monthlast = $tab_powertime['mois'];
-							$anneelast = $tab_powertime['annee'];
-							 
-							
-            	}
+            		$tab_powertime = $preload;
+					$last = $tab_powertime['last'];
+					$daylast = $tab_powertime['jour'];
+					$monthlast = $tab_powertime['mois'];
+					$anneelast = $tab_powertime['annee'];
+					if (array_key_exists("semaine", $tab_powertime)) {
+						$weeklast = $tab_powertime['semaine'];
+					}  
+				}
             	else {
             			// aucune variable suivie, mise à zéro
             			$tab_powertime['last'] = date('d')."-00:00";
@@ -66,6 +69,8 @@
 						$tab_powertime['mois_prec'] = 0;
 						$tab_powertime['jour_prec'] = 0;
 						$tab_powertime['annee_prec'] = 0;
+						$tab_powertime['semaine'] = 0;
+						$tab_powertime['semaine_prec'] = 0;
             	}
 					
             	$valeurPeriph = getValue($api_periph);
@@ -75,6 +80,7 @@
 					$lastday = substr($last, 0, 2);
 					$mesureveille = false;
 					$razday = false;
+					$razweek = false;
 					$razmois = false;
 					$razannee = false;
 					// si dernière mesure veille, dernière mesure à 00:00
@@ -85,6 +91,12 @@
 						$tab_powertime['jour_prec'] = $tab_powertime['jour'];
 						$tab_powertime['jour'] = 0;
 						$daylast = 0;
+						if (date('w') == 1) {
+							$razweek = true;
+							$tab_powertime['semaine_prec'] = $tab_powertime['semaine'];
+							$tab_powertime['semaine'] = 0;
+							$weeklast = 0;
+						}
 						if (date('j') == 1) {
 							$razmois = true;
 							$tab_powertime['mois_prec'] = $tab_powertime['mois'];
@@ -122,12 +134,14 @@
 						$onlymn = floor($difference/60);
 						//ajout des minutes calculées
             			$daylast += $onlymn;
+						$weeklast += $onlymn;
             			$monthlast += $onlymn;
 						$anneelast += $onlymn;
 						
 						$tab_powertime['jour'] = $daylast;
 						$tab_powertime['mois'] = $monthlast;
 						$tab_powertime['annee'] = $anneelast;
+						$tab_powertime['semaine'] = $weeklast;
 						
             		}
 					$tab_powertime['last'] = date('d')."-".$maintenant;
@@ -147,6 +161,24 @@
 					$minute = floor($reste2);
 					$xml .= "<JOURLIT_PREC>".$heure."h ".$minute."mn</JOURLIT_PREC>";
             		
+					$xml .= "<SEMAINE>".$tab_powertime['semaine']."</SEMAINE>";
+            		$minutes = $tab_powertime['semaine'];
+            		$jour = floor($minutes/1440);
+					$reste1 = ($minutes%1440);
+            		$heure = floor($reste1/60);
+					$reste2 = ($reste1%60);
+					$minute = floor($reste2);
+					$xml .= "<SEMAINELIT>".$jour."j ".$heure."h ".$minute."mn</SEMAINELIT>";
+					
+            		$xml .= "<SEMAINE_PREC>".$tab_powertime['semaine_prec']."</SEMAINE_PREC>";
+            		$minutes = $tab_powertime['semaine_prec'];
+            		$jour = floor($minutes/1440);
+					$reste1 = ($minutes%1440);
+            		$heure = floor($reste1/60);
+					$reste2 = ($reste1%60);
+					$minute = floor($reste2);
+					$xml .= "<SEMAINELIT_PREC>".$jour."j ".$heure."h ".$minute."mn</SEMAINELIT_PREC>";
+					
             		$xml .= "<MOIS>".$tab_powertime['mois']."</MOIS>";
             		$minutes = $tab_powertime['mois'];
             		$jour = floor($minutes/1440);
