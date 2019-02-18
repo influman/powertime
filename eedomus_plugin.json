@@ -2,9 +2,9 @@
 	"plugin_id": "powertime",
 	"name_fr": "Temps de fonctionnement",
 	"icon": "powertime.png",
-	"version": "2.2",
+	"version": "2.41",
 	"creation_date": "2017-11-06",
-	"modification_date": "2019-02-16",
+	"modification_date": "2019-02-18",
 	"author": "Influman",
 	"description_fr": "Suivi du temps de fonctionnement d'un périphérique<br>Appareil, lumière, chauffage...",
 	"description_en": "",
@@ -55,10 +55,10 @@
 			{
 				"VAR1": "plugin.parameters.API",
 				"VAR2": "plugin.parameters.VAL",
-      			"VAR3": "",
+      			"VAR3": "cumul=non",
 				"value_type": "string",
 				"ignore_errors": 3,
-				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&action=poll&capteur=jour",
+				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&option=[VAR3]&action=poll&capteur=jour",
 				"RAW_XPATH": "concat(/POWERTIME/JOUR,' (', /POWERTIME/JOUR_PREC, ')')",
 				"POLLING": "2"
 			}
@@ -75,10 +75,10 @@
 			{
 				"VAR1": "plugin.parameters.API",
 				"VAR2": "plugin.parameters.VAL",
-      			"VAR3": "",
+      			"VAR3": "cumul=non",
 				"value_type": "string",
 				"ignore_errors": 3,
-				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&action=poll",
+				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&option=[VAR3]&action=poll",
 				"RAW_XPATH": "concat(/POWERTIME/JOURLIT,' (', /POWERTIME/JOURLIT_PREC, ')')",
 				"POLLING": "2"
 			}
@@ -95,10 +95,10 @@
 			{
 				"VAR1": "plugin.parameters.API",
 				"VAR2": "plugin.parameters.VAL",
-      			"VAR3": "",
+      			"VAR3": "cumul=non",
 				"value_type": "string",
 				"ignore_errors": 3,
-				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&action=poll",
+				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&option=[VAR3]&action=poll",
 				"RAW_XPATH": "concat(/POWERTIME/MOIS,' (', /POWERTIME/MOIS_PREC, ')')",
 				"POLLING": "2"
 			}
@@ -115,10 +115,10 @@
 			{
 				"VAR1": "plugin.parameters.API",
 				"VAR2": "plugin.parameters.VAL",
-      			"VAR3": "",
+      			"VAR3": "cumul=non",
 				"value_type": "string",
 				"ignore_errors": 3,
-				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&action=poll",
+				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&option=[VAR3]&action=poll",
 				"RAW_XPATH": "concat(/POWERTIME/MOISLIT,' (', /POWERTIME/MOISLIT_PREC, ')')",
 				"POLLING": "2"
 			}
@@ -135,10 +135,10 @@
 			{
 				"VAR1": "plugin.parameters.API",
 				"VAR2": "plugin.parameters.VAL",
-      			"VAR3": "",
+      			"VAR3": "cumul=non",
 				"value_type": "string",
 				"ignore_errors": 3,
-				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&action=poll",
+				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&option=[VAR3]&action=poll",
 				"RAW_XPATH": "concat(/POWERTIME/ANNEE,' (', /POWERTIME/ANNEE_PREC, ')')",
 				"POLLING": "2"
 			}
@@ -155,10 +155,10 @@
 			{
 				"VAR1": "plugin.parameters.API",
 				"VAR2": "plugin.parameters.VAL",
-      			"VAR3": "",
+      			"VAR3": "cumul=non",
 				"value_type": "string",
 				"ignore_errors": 3,
-				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&action=poll",
+				"RAW_URL": "http://localhost/script/?exec=powertime.php&api=[VAR1]&val=[VAR2]&option=[VAR3]&action=poll",
 				"RAW_XPATH": "concat(/POWERTIME/ANNEELIT,' (', /POWERTIME/ANNEELIT_PREC, ')')",
 				"POLLING": "2"
 			}

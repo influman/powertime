@@ -1,12 +1,13 @@
 <?php  
             $xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";  
 	        //**********************************************************************************************************
-            // V2.1 : Script de suivi du temps de fonctionnement d'un appareil, par relevé régulier de l'état (relevé non précis)
+            // V2.41 : Script de suivi du temps de fonctionnement d'un appareil, par relevé régulier de l'état (relevé non précis)
             //*************************************** ******************************************************************
             // recuperation des infos depuis la requete
             $api_periph = getArg("api", true, 'undefined');
             $valeurON = getArg("val", true, 100);
             $capteur = getArg("capteur", false, '');
+			$option = getArg("option", false, '');
             $api_script = getArg('eedomus_controller_module_id'); 
             $action = getArg("action"); 
  
@@ -29,6 +30,14 @@
 					$tab_powertime['jour_prec'] = 0;
 					$tab_powertime['annee_prec'] = 0;
 					$tab_powertime['last'] = date('d')."-00:00";
+					$tab_powertime['j-7'] = 0;
+					$tab_powertime['j-6'] = 0;
+					$tab_powertime['j-5'] = 0;
+					$tab_powertime['j-4'] = 0;
+					$tab_powertime['j-3'] = 0;
+					$tab_powertime['j-2'] = 0;
+					$tab_powertime['j-1'] = 0;
+					$tab_powertime['moy7jours']  = 0;
 					saveVariable('POWERTIME_'.$api_periph, $tab_powertime);
 					
             }
@@ -49,6 +58,14 @@
             	$monthlast = 0;
 				$weeklast = 0;
 				$anneelast = 0;
+				$j7last = 0;
+				$j6last = 0;
+				$j5last = 0;
+				$j4last = 0;
+				$j3last = 0;
+				$j2last = 0;
+				$j1last = 0;
+				
 				$preload = loadVariable('POWERTIME_'.$api_periph);
 				if ($preload != '' && substr($preload, 0, 8) != "## ERROR") {
             		$tab_powertime = $preload;
@@ -58,6 +75,15 @@
 					$anneelast = $tab_powertime['annee'];
 					if (array_key_exists("semaine", $tab_powertime)) {
 						$weeklast = $tab_powertime['semaine'];
+					}  
+					if (array_key_exists("j-7", $tab_powertime)) {
+						$j7last = $tab_powertime['j-7'];
+						$j6last = $tab_powertime['j-6'];
+						$j5last = $tab_powertime['j-5'];
+						$j4last = $tab_powertime['j-4'];
+						$j3last = $tab_powertime['j-3'];
+						$j2last = $tab_powertime['j-2'];
+						$j1last = $tab_powertime['j-1'];
 					}  
 				}
             	else {
@@ -71,6 +97,14 @@
 						$tab_powertime['annee_prec'] = 0;
 						$tab_powertime['semaine'] = 0;
 						$tab_powertime['semaine_prec'] = 0;
+						$tab_powertime['j-7'] = 0;
+						$tab_powertime['j-6'] = 0;
+						$tab_powertime['j-5'] = 0;
+						$tab_powertime['j-4'] = 0;
+						$tab_powertime['j-3'] = 0;
+						$tab_powertime['j-2'] = 0;
+						$tab_powertime['j-1'] = 0;
+						$tab_powertime['moy7jours'] = 0;
             	}
 					
             	$valeurPeriph = getValue($api_periph);
@@ -89,8 +123,22 @@
 						$mesureveille = true;
 						$razday = true;
 						$tab_powertime['jour_prec'] = $tab_powertime['jour'];
-						$tab_powertime['jour'] = 0;
+						
 						$daylast = 0;
+						$tab_powertime['j-7']  = $tab_powertime['j-6'];
+						$tab_powertime['j-6']  = $tab_powertime['j-5'];
+						$tab_powertime['j-5']  = $tab_powertime['j-4'];
+						$tab_powertime['j-4']  = $tab_powertime['j-3'];
+						$tab_powertime['j-3']  = $tab_powertime['j-2'];
+						$tab_powertime['j-2']  = $tab_powertime['j-1'];
+						$temp = $tab_powertime['j-1'];
+						$tab_powertime['j-1'] = $tab_powertime['jour'];
+						$moyenne7jours = round((($tab_powertime['j-7'] + $tab_powertime['j-6'] + $tab_powertime['j-5'] + $tab_powertime['j-4'] + $tab_powertime['j-3'] + $tab_powertime['j-2'] + $tab_powertime['j-1']) / 7), 0);
+						$tab_powertime['moy7jours'] = $moyenne7jours;
+						if ($option == "cumul=oui") {
+							$tab_powertime['j-1'] += $temp;
+						} 
+						$tab_powertime['jour'] = 0;
 						if (date('w') == 1) {
 							$razweek = true;
 							$tab_powertime['semaine_prec'] = $tab_powertime['semaine'];
@@ -214,6 +262,24 @@
 					$reste2 = ($reste1%60);
 					$minute = floor($reste2);
 					$xml .= "<ANNEELIT_PREC>".$jour."j ".$heure."h ".$minute."mn</ANNEELIT_PREC>";
+					
+					$xml .= "<J-7>".$tab_powertime['j-7']."</J-7>";
+					$xml .= "<J-6>".$tab_powertime['j-6']."</J-6>";
+					$xml .= "<J-5>".$tab_powertime['j-5']."</J-5>";
+					$xml .= "<J-4>".$tab_powertime['j-4']."</J-4>";
+					$xml .= "<J-3>".$tab_powertime['j-3']."</J-3>";
+					$xml .= "<J-2>".$tab_powertime['j-2']."</J-2>";
+					$xml .= "<J-1>".$tab_powertime['j-1']."</J-1>";
+					
+					$xml .= "<MOY7JOURS>".$tab_powertime['moy7jours']."</MOY7JOURS>";
+            		$minutes = $tab_powertime['moy7jours'];
+            		$jour = floor($minutes/1440);
+					$reste1 = ($minutes%1440);
+            		$heure = floor($reste1/60);
+					$reste2 = ($reste1%60);
+					$minute = floor($reste2);
+					$xml .= "<MOY7JOURSLIT>".$jour."j ".$heure."h ".$minute."mn</MOY7JOURSLIT>";
+								
         }
         $xml .= "</POWERTIME>";
 		sdk_header('text/xml');
